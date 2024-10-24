@@ -1,0 +1,64 @@
+import pyautogui as pa
+import time
+import cv2
+import numpy as np
+
+# Função para verificar se o botão "Pular Anúncio" está na tela
+
+
+def verificar_pular_anuncio():
+    # Captura a tela
+    screenshot = pa.screenshot()
+    screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
+
+    # Carrega a imagem do botão "Pular Anúncio"
+    botao_pular = cv2.imread('skip_ad.png')
+    resultado = cv2.matchTemplate(
+        screenshot, botao_pular, cv2.TM_CCOEFF_NORMED)
+
+    # Define um limiar para a detecção
+    limiar = 0.8
+    locais = np.where(resultado >= limiar)
+
+    # Se o botão for encontrado, retorna as coordenadas
+    return len(locais[0]) > 0
+
+# Função para maximizar a janela do Edge
+
+
+def maximizar_janela():
+    pa.hotkey('alt', 'space')  # Abre o menu de controle da janela
+    time.sleep(0.5)
+    pa.press('x')  # Seleciona a opção de maximizar
+
+
+# Início do código
+pa.PAUSE = 1
+pa.press('win')
+pa.write("edge")
+pa.press('enter')
+time.sleep(4)
+
+# Maximiza a janela do Edge se não estiver em tela cheia
+maximizar_janela()
+
+# Acesse o YouTube e faça a pesquisa
+pa.write("https://www.youtube.com/")
+pa.press('enter')
+time.sleep(4)
+pa.click(x=603, y=102)  # Clica na barra de pesquisa
+pa.write("red hot chilli peppers")
+pa.press('enter')
+time.sleep(3)
+pa.click(x=477, y=476)  # Clica no vídeo desejado
+time.sleep(7)
+
+# Verifica se o botão "Pular Anúncio" está visível
+if verificar_pular_anuncio():
+    # Se encontrado, clica no botão
+    botao_pular_pos = pa.locateOnScreen('skip_ad.png', confidence=0.8)
+    if botao_pular_pos:
+        pa.click(botao_pular_pos)
+
+# Adicione um tempo de espera para garantir que o vídeo comece
+time.sleep(5)
